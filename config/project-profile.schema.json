@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Research agent project profile",
+  "type": "object",
+  "required": ["version", "harnesses", "profiles"],
+  "properties": {
+    "version": {"const": 1},
+    "manuscript_root": {"type": "string"},
+    "build_directory": {"type": "string"},
+    "harnesses": {"type": "object"},
+    "routes": {"type": "array"},
+    "profiles": {"type": "object"}
+  },
+  "additionalProperties": true
+}
