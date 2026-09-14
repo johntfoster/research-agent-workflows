@@ -13,7 +13,11 @@ if [ "$(pwd -P)" != "$(cd "$repository_root" && pwd -P)" ]; then
   exit 2
 fi
 
-shared_root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd -P)
+# Compatibility entry points in paper repositories are symlinks. Resolve the
+# helper itself before locating core-owned validators so invocation through an
+# old path is identical to invocation inside .agent/shared.
+script_path=$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$0")
+shared_root=$(CDPATH= cd -- "$(dirname -- "$script_path")/../../.." && pwd -P)
 python3 "$shared_root/tools/validate_process_log.py" "$1"
 if git diff --cached --quiet; then
   echo "no staged changes; stage the intended change before committing" >&2

@@ -75,6 +75,18 @@ class AgentctlTests(unittest.TestCase):
         self.assertTrue((self.paper / ".codex/skills/latex-citation-verifier/SKILL.md").is_file())
         self.assertFalse((self.paper / ".codex/skills/setup-moose-conda").exists())
 
+    def test_commit_helper_resolves_compatibility_symlink(self) -> None:
+        compatibility = self.paper / "agent_environment" / "skills" / "commit"
+        compatibility.parent.mkdir(parents=True)
+        compatibility.symlink_to("../../.agent/shared/skills/commit")
+        helper = compatibility / "scripts" / "commit.sh"
+        result = subprocess.run(
+            [str(helper)], cwd=self.paper, text=True, capture_output=True, check=False
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("usage:", result.stderr)
+        self.assertNotIn("agent_environment/tools", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
