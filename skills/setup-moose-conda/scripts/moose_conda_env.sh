@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-repo_root="$(git -C "${script_dir}" rev-parse --show-toplevel)"
+# This helper lives inside a Git submodule, so discovering from the script path
+# would return the workflow-core repository. Commands are run with the paper as
+# their working directory; discover that enclosing consumer repository instead.
+repo_root="$(git rev-parse --show-toplevel)"
 
 readonly DEFAULT_ENV_NAME="moose"
 readonly DEFAULT_MOOSE_PATH=".agent-runtime/moose"
@@ -30,7 +32,7 @@ conda_command=""
 
 usage() {
   printf '%s\n' \
-    "Usage: .agent/shared/skills/setup-moose-conda/scripts/moose_conda_env.sh {status|setup|verify|run} [-- command [args...]]" \
+    "Usage: .agent/shared/skills/setup-moose-conda/scripts/moose_conda_env.sh {root|status|setup|verify|run} [-- command [args...]]" \
     "" \
     "Environment overrides:" \
     "  MOOSE_CONDA_ENV       Conda environment name (default: moose)" \
@@ -213,6 +215,10 @@ run_command() {
 }
 
 case "${1:-}" in
+  root)
+    [[ "$#" -eq 1 ]] || { usage >&2; exit 2; }
+    printf '%s\n' "${repo_root}"
+    ;;
   status)
     [[ "$#" -eq 1 ]] || { usage >&2; exit 2; }
     status

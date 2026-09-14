@@ -87,6 +87,21 @@ class AgentctlTests(unittest.TestCase):
         self.assertIn("usage:", result.stderr)
         self.assertNotIn("agent_environment/tools", result.stderr)
 
+    def test_moose_helper_discovers_consumer_root(self) -> None:
+        helper = (
+            self.paper
+            / ".agent/shared/skills/setup-moose-conda/scripts/moose_conda_env.sh"
+        )
+        result = subprocess.run(
+            [str(helper), "root"],
+            cwd=self.paper,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(Path(result.stdout.strip()), self.paper)
+
 
 if __name__ == "__main__":
     unittest.main()
