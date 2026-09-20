@@ -25,6 +25,8 @@ def create(dest, project_id, repository, revision, title):
     manifest={'schema_version':1,'id':project_id,'title':title,'repository':repository,'default_branch':'main','status':'incubating','authority':{'instructions':'AGENTS.md','profile':'agent-profile.json','manuscript':'main.tex'},'workflow':{'repository':'https://github.com/johntfoster/research-agent-workflows','path':'.agent/shared','revision':revision,'release':'explicit-pin'},'maintenance':{'manuscript_edits':False,'protected_paths':list(DEFAULT_PROTECTED)},'publication':{'site':{'url':None,'status':'not-configured'},'codespace':{'url':'https://codespaces.new/'+repository.removeprefix('https://github.com/'),'verification':'not-run'},'citation':None,'license':{'status':'owner-decision-needed'},'release':{'status':'not-created'}},'verification':{k:'not-run' for k in CATEGORIES},'next_milestone':'Author the manuscript only under an explicit request, then validate this scaffold.'}
     (dest/'research-project.yml').write_text(json.dumps(manifest,indent=2)+'\n')
     shutil.copytree(CORE/'templates/hooks',dest/'.githooks')
+    workflows=dest/'.github/workflows';workflows.mkdir(parents=True)
+    (workflows/'pages.yml').write_text((CORE/'templates/workflows/pages.yml').read_text().replace('__SHARED_REVISION__',revision))
     (dest/'tools').mkdir();(dest/'tools/agentctl').symlink_to('../.agent/shared/tools/agentctl')
     subprocess.run(['git','-C',str(dest),'update-index','--add','--cacheinfo',f'160000,{revision},.agent/shared'],check=True)
     subprocess.run(['git','-C',str(dest),'config','core.hooksPath','.githooks'],check=True)

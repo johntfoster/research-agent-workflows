@@ -9,3 +9,9 @@ site build/link/deploy, immutable source packaging, and an explicit manuscript
 build. Pin workflow references to the same released commit as the submodule.
 The manuscript workflow is disabled by default and also rejects frozen manifests.
 It is provided for future authorized work, not executed by this migration.
+
+`tools/bootstrap_project.py` always installs `templates/workflows/pages.yml` as
+`.github/workflows/pages.yml`, pinned to the same exact shared revision as the
+submodule. Companion-site build and Pages deployment are therefore present in
+every scaffolded repository by default; the owner still enables Pages for the
+repository with build type "GitHub Actions".
