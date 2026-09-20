@@ -1,0 +1,36 @@
+name: Explicit manuscript build
+on:
+  workflow_call:
+    inputs:
+      authorized:
+        type: boolean
+        default: false
+      build-argv:
+        type: string
+        required: true
+      container-image:
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    if: inputs.authorized
+    runs-on: ubuntu-24.04
+    container: ${{ inputs.container-image }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          submodules: recursive
+      - name: Enforce manuscript policy and run declared build
+        env:
+          BUILD_ARGV: ${{ inputs.build-argv }}
+        run: |
+          python3 - <<'PYCODE'
+          import json,os,subprocess
+          from pathlib import Path
+          manifest=json.loads(Path('research-project.yml').read_text())
+          if not manifest['maintenance']['manuscript_edits']:
+              raise SystemExit('Manuscript freeze: build not authorized')
+          subprocess.run(json.loads(os.environ['BUILD_ARGV']),check=True)
+          PYCODE

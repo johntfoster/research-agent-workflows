@@ -61,6 +61,23 @@ class AgentctlTests(unittest.TestCase):
         self.assertEqual(value["profiles"], ["manuscript"])
         self.assertEqual([item["name"] for item in value["skills"]], ["latex-manuscript-request-router"])
 
+    def test_new_shared_route_without_copying_consumer_profile(self) -> None:
+        path = self.paper / "agent-profile.json"
+        manifest = json.loads(path.read_text())
+        manifest["routes"] = []
+        path.write_text(json.dumps(manifest))
+        result = self.run_tool("route", "engineering review", "--json")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual([x["name"] for x in json.loads(result.stdout)["skills"]], ["foster-engineering-reviewer"])
+
+    def test_local_route_keeps_authority(self) -> None:
+        path = self.paper / "agent-profile.json"
+        manifest = json.loads(path.read_text())
+        manifest["routes"] = [{"any": ["engineering review"], "skills": ["commit"], "profiles": []}]
+        path.write_text(json.dumps(manifest))
+        result = self.run_tool("route", "engineering review", "--json")
+        self.assertEqual([x["name"] for x in json.loads(result.stdout)["skills"]], ["commit"])
+
     def test_local_skill_cannot_shadow_shared_skill(self) -> None:
         local = self.paper / "agent_local" / "skills" / "commit"
         local.mkdir(parents=True)

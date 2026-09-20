@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Independent research project",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "repository",
+    "default_branch",
+    "status",
+    "authority",
+    "workflow",
+    "maintenance",
+    "publication",
+    "verification",
+    "next_milestone"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "repository": {
+      "type": "string"
+    },
+    "default_branch": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "incubating",
+        "submitted",
+        "superseded",
+        "shelved",
+        "archival"
+      ]
+    },
+    "scientific_scope": {
+      "type": "string"
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "instructions",
+        "profile",
+        "manuscript"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "required": [
+        "repository",
+        "path",
+        "revision",
+        "release"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "release": {
+          "type": "string"
+        }
+      }
+    },
+    "maintenance": {
+      "type": "object",
+      "required": [
+        "manuscript_edits",
+        "protected_paths"
+      ],
+      "properties": {
+        "manuscript_edits": {
+          "type": "boolean"
+        },
+        "protected_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "publication": {
+      "type": "object"
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "infrastructure",
+        "implementation",
+        "analytical",
+        "convergence",
+        "finite_deformation",
+        "physical_validation"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "next_milestone": {
+      "type": "string"
+    },
+    "reproduction": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

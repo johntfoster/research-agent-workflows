@@ -28,3 +28,25 @@ tools/agentctl activate codex "audit the derivation"
 
 Submodule updates are explicit paper commits. A core release never changes a
 paper until that paper advances its pinned commit and passes its own checks.
+
+## Research infrastructure (v0.2)
+
+`research-project.yml` uses the JSON subset of YAML and follows
+`config/research-project.schema.json`. Runtime commands need only Python 3.10+:
+
+```sh
+python3 .agent/shared/tools/research_project.py check
+python3 .agent/shared/tools/research_project.py site
+python3 .agent/shared/tools/research_project.py links .agent-runtime/site
+python3 .agent/shared/tools/research_project.py package
+```
+
+The core contains 18 additional coordination, review, traceability, verification,
+publication and provenance skills. Read-only review and session-ledger helpers
+provide triage and coverage evidence, not invented reasoning or scientific proof.
+See `templates/README.md` for hooks and reusable workflows. Manuscript builds are
+explicit, disabled by default, and rejected while a manifest is frozen.
+
+Run `python3 -m pip install -r requirements-test.txt` then
+`python3 -m unittest discover -s tests -v` before releasing a core revision.
+Consumer repositories advance pins only through separate tested commits.

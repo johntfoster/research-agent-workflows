@@ -180,6 +180,12 @@ def route(query: str, manifest: dict[str, Any], available: list[dict[str, str]])
     explicit = explicit_route(query, manifest, available)
     if explicit is not None:
         return explicit
+    # Local explicit routes keep authority; newly released shared routes are
+    # available without copying them into every consumer profile.
+    core_profile = read_json(CORE_ROOT / "agent-profile.json")
+    shared = explicit_route(query, core_profile, available)
+    if shared is not None and all(name in manifest["profiles"] for name in shared[1]):
+        return shared
     selected = matching_skills(query, available)
     return selected, matching_profiles(query, selected, manifest)
 
