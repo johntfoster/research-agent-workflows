@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.0 — 2026-09-21
+
+- Add `manuscript-acceptance-cycle` (scope, frozen candidates, three independent
+  reviewers with exact-ACCEPT counting, Foster editorial cycles, fresh re-review,
+  delivery) and its review-and-deliver route. Catalog grows to 35 skills.
+- Make companion-site Pages deployment a bootstrap standard: every scaffolded
+  repository installs `pages.yml` pinned to the same released revision as the
+  submodule; the owner still enables Pages with build type "GitHub Actions".
+- Apply the standing licensing policy in the core: Apache-2.0 for code, CC BY 4.0
+  for manuscripts, with `LICENSES.md` and `licenses/CC-BY-4.0.txt`.
+- Container and local verification only: 24 tests pass, including routing, silent
+  shadowing rejection, manuscript freeze and rename/case guards, site/link/source
+  packaging, held-out prose, and session-ledger coverage. No manuscript build or
+  scientific simulation is run by this release.
+- Consumer adoption still requires a separate tested pin update in each paper.
+
 ## 0.2.0 — 2026-09-19
 
 - Add 18 program, review, provenance, traceability and publication skills.
