@@ -370,9 +370,47 @@ def install_skills(root: Path, target: Path, selected: list[dict[str, str]], dry
     return installed
 
 
+def named_selection(
+    manifest: dict[str, Any],
+    available: list[dict[str, str]],
+    requested_skills: Iterable[str] | None,
+    requested_profiles: Iterable[str] | None,
+) -> tuple[list[dict[str, str]], list[str]]:
+    """Select skills by exact name and by declared profile globs, bypassing query routing."""
+    by_name = {item["name"]: item for item in available}
+    order: list[str] = []
+    for name in requested_skills or []:
+        if name not in by_name:
+            raise AgentctlError(f"unknown skill: {name}")
+        if name not in order:
+            order.append(name)
+    profile_names = sorted(set(requested_profiles or []))
+    for name in profile_names:
+        if name not in manifest["profiles"]:
+            raise AgentctlError(f"unknown dependency profile: {name}")
+        profile = validate_profile(name, manifest["profiles"][name])
+        patterns = [str(pattern) for pattern in profile.get("skills", [])]
+        for candidate in sorted(by_name):
+            if candidate in order:
+                continue
+            if any(
+                candidate == pattern
+                or (pattern.endswith("*") and candidate.startswith(pattern[:-1]))
+                for pattern in patterns
+            ):
+                order.append(candidate)
+    return [by_name[name] for name in order], profile_names
+
+
 def cmd_activate(args: argparse.Namespace, root: Path) -> int:
     _, manifest = load_manifest(root, args.manifest)
-    selected, profile_names = route(args.query, manifest, skills(root))
+    available = skills(root)
+    if args.skill or args.profile:
+        selected, profile_names = named_selection(manifest, available, args.skill, args.profile)
+    elif args.query:
+        selected, profile_names = route(args.query, manifest, available)
+    else:
+        raise AgentctlError("provide a query, or at least one --skill or --profile")
     target = harness_target(root, manifest, args.harness, args.target)
     if (
         not args.target
@@ -475,7 +513,9 @@ def parser() -> argparse.ArgumentParser:
     route_parser.add_argument("--provision", action="store_true", help="provision matched dependency profiles")
     activate_parser = commands.add_parser("activate", parents=[common], help="install only the skills and dependencies selected for a harness query")
     activate_parser.add_argument("harness")
-    activate_parser.add_argument("query")
+    activate_parser.add_argument("query", nargs="?", help="task query routed to the smallest relevant skill set")
+    activate_parser.add_argument("--skill", action="append", help="install one exact skill name; repeatable")
+    activate_parser.add_argument("--profile", action="append", help="install every skill matching a declared profile; repeatable")
     activate_parser.add_argument("--target", help="override the harness skill directory with a repository-relative path")
     activate_parser.add_argument("--json", action="store_true")
     activate_parser.add_argument("--dry-run", action="store_true")

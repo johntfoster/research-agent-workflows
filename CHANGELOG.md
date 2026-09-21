@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1 — 2026-09-21
+
+- `agentctl activate` accepts `--skill NAME` (repeatable) and `--profile NAME`
+  (repeatable) to install an exact curated working set per harness, alongside
+  the existing task-query route. Unknown skill or profile names fail with a
+  clear error instead of silently installing nothing, and the query argument
+  is now optional.
+- Add regression coverage for named/profile activation and its three failure
+  paths. 26 tests pass.
+
 ## 0.3.0 — 2026-09-21
 
 - Add `manuscript-acceptance-cycle` (scope, frozen candidates, three independent

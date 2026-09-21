@@ -26,6 +26,17 @@ tools/agentctl route "audit the derivation"
 tools/agentctl activate codex "audit the derivation"
 ```
 
+Install an exact working set instead of a task route by naming skills or
+profiles directly. Repeat the flags to build a set:
+
+```sh
+tools/agentctl activate copilot --skill commit --profile manuscript --profile research
+```
+
+`--skill` installs one exact catalog name; `--profile` installs every skill
+matching that profile's declared globs. Unknown names fail instead of
+installing nothing, so a typo cannot silently produce an empty harness.
+
 Submodule updates are explicit paper commits. A core release never changes a
 paper until that paper advances its pinned commit and passes its own checks.
 

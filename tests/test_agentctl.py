@@ -92,6 +92,27 @@ class AgentctlTests(unittest.TestCase):
         self.assertTrue((self.paper / ".codex/skills/latex-citation-verifier/SKILL.md").is_file())
         self.assertFalse((self.paper / ".codex/skills/setup-moose-conda").exists())
 
+    def test_activation_installs_named_skill_and_profile(self) -> None:
+        result = self.run_tool(
+            "activate", "codex", "--skill", "commit", "--profile", "manuscript"
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((self.paper / ".codex/skills/commit/SKILL.md").is_file())
+        self.assertTrue((self.paper / ".codex/skills/latex-derivation-auditor/SKILL.md").is_file())
+        self.assertTrue((self.paper / ".codex/skills/latex-manuscript-request-router/SKILL.md").is_file())
+        self.assertFalse((self.paper / ".codex/skills/setup-moose-conda").exists())
+
+    def test_activation_rejects_unknown_skill_and_profile(self) -> None:
+        missing_skill = self.run_tool("activate", "codex", "--skill", "no-such-skill")
+        self.assertEqual(missing_skill.returncode, 2)
+        self.assertIn("unknown skill", missing_skill.stderr)
+        missing_profile = self.run_tool("activate", "codex", "--profile", "no-such-profile")
+        self.assertEqual(missing_profile.returncode, 2)
+        self.assertIn("unknown dependency profile", missing_profile.stderr)
+        no_selection = self.run_tool("activate", "codex")
+        self.assertEqual(no_selection.returncode, 2)
+        self.assertIn("provide a query", no_selection.stderr)
+
     def test_commit_helper_resolves_compatibility_symlink(self) -> None:
         compatibility = self.paper / "agent_environment" / "skills" / "commit"
         compatibility.parent.mkdir(parents=True)
