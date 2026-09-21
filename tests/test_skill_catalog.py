@@ -5,8 +5,8 @@ import unittest
 import yaml
 CORE=Path(__file__).resolve().parents[1]
 class CatalogTests(unittest.TestCase):
- def test_all_34_skills_have_discoverable_frontmatter(self):
-  files=list((CORE/'skills').glob('*/SKILL.md'));self.assertEqual(len(files),34)
+ def test_all_35_skills_have_discoverable_frontmatter(self):
+  files=list((CORE/'skills').glob('*/SKILL.md'));self.assertEqual(len(files),35)
   for p in files:
    fm=yaml.safe_load(p.read_text().split('---',2)[1]);self.assertEqual(fm['name'],p.parent.name);self.assertTrue(fm['description'])
  def test_declared_routes_resolve(self):
